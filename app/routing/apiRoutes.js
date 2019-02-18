@@ -6,7 +6,7 @@ module.exports = function(app) {
         res.json(surveyData);
     });
 
-    app.post("api/tables", (req, res) => {
+    app.post("/api/tables", (req, res) => {
         surveyData.push(req.body);
         res.json(true);
     });
