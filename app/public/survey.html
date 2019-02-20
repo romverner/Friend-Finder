@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible">
@@ -8,6 +9,7 @@
     <script src="https://code.jquery.com/jquery.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 </head>
+
 <body>
     <div class="container mt-5">
         <h1>Survey Questions</h1>
@@ -28,7 +30,8 @@
                 <option value="5">Strongly Agree</option>
             </select>
         </div>
-        <p class="mt-1"><b>Question 2:</b> You often get so lost in throughts that you ignore or forget your surroundings.</p>
+        <p class="mt-1"><b>Question 2:</b> You often get so lost in throughts that you ignore or forget your
+            surroundings.</p>
         <div class="form-group">
             <select class="form-control" id="question2" style="width: 250px;">
                 <option value="1">Strongly Disagree</option>
@@ -38,7 +41,8 @@
                 <option value="5">Strongly Agree</option>
             </select>
         </div>
-        <p class="mt-1"><b>Question 3:</b> You try to respond to your e-mails as soon as possible and cannot stand a messy inbox.</p>
+        <p class="mt-1"><b>Question 3:</b> You try to respond to your e-mails as soon as possible and cannot stand a
+            messy inbox.</p>
         <div class="form-group">
             <select class="form-control" id="question3" style="width: 250px;">
                 <option value="1">Strongly Disagree</option>
@@ -118,21 +122,48 @@
                 <option value="5">Strongly Agree</option>
             </select>
         </div>
-        <button type="submit" class="btn btn-primary btn-lg btn-block mt-5 mb-5" id="submit">Submit</button>
+        <button type="submit" class="btn btn-primary btn-lg btn-block mt-5 mb-5" data-toggle="modal"
+            data-target="#myModal" id="submit">Submit</button>
         <hr>
-        <p>Note: These questions are originally from a <a href="https://www.16personalities.com/free-personality-test">Meyer's Briggs Personality</a> test.
-           No copyright infringement was inteded. They are simply being used as a proof-of-concept for the website.
+        <p>Note: These questions are originally from a <a
+                href="https://www.16personalities.com/free-personality-test">Meyer's Briggs Personality</a> test.
+            No copyright infringement was inteded. They are simply being used as a proof-of-concept for the website.
         </p>
         <div class="container mb-5">
-            <p><a href="/api/friends">API Friends List</a> | <a href="https://github.com/romverner/Friend-Finder">GitHub Repo</a></p>
+            <p><a href="/api/friends">API Friends List</a> | <a href="https://github.com/romverner/Friend-Finder">GitHub
+                    Repo</a></p>
+        </div>
+    </div>
+
+
+    <div id="myModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">You have a match!</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+
         </div>
     </div>
 </body>
+
 </html>
 
 <script type="text/javascript">
     $("#submit").on("click", (event) => {
         event.preventDefault();
+
+        var userAnswerArray = [];
 
         var newSurveyAnswer = {
             name: $("#name").val().trim(),
@@ -151,24 +182,49 @@
             ]
         };
 
-        console.log(newSurveyAnswer);
+        for (var i = 0; i < newSurveyAnswer.answers.length; i++) {
+            userAnswerArray.push(parseInt(newSurveyAnswer.answers[i]));
+        };
+
+        console.log(userAnswerArray);
+
+        var differencesArray = [];
+        var totalDifference = 0;
+
+        function indexOfSmallest(array) {
+            return array.indexOf(Math.min.apply(Math, array));
+        };
+
+        $.get("/api/friends", (data) => {
+            console.log(data);
+
+            for (var i = 0; i < data.length; i++) {
+                for (var j = 0; j < 10; j++) {
+                    totalDifference += (Math.abs(userAnswerArray[j] - parseInt(data[i].scores[j])));
+                }
+                differencesArray.push(totalDifference);
+                console.log(differencesArray);
+                totalDifference = 0;
+            };
+
+            $(".modal-body").append("<h3>" + data[indexOfSmallest(differencesArray)].name + "</h3>");
+        });
 
         $.post("/api/tables", newSurveyAnswer, (data) => {
-            alert("Thank you for your answers!")
 
             // Clear fields after answering
             $("#name").val("");
             $("#picture").val("");
-            $("#question1").val(1),
-            $("#question2").val(1),
-            $("#question3").val(1),
-            $("#question4").val(1),
-            $("#question5").val(1),
-            $("#question6").val(1),
-            $("#question7").val(1),
-            $("#question8").val(1),
-            $("#question9").val(1),
-            $("#question10").val(1)
+            $("#question1").val(1);
+            $("#question2").val(1);
+            $("#question3").val(1);
+            $("#question4").val(1);
+            $("#question5").val(1);
+            $("#question6").val(1);
+            $("#question7").val(1);
+            $("#question8").val(1);
+            $("#question9").val(1);
+            $("#question10").val(1);
         });
     });
 </script>
