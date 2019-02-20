@@ -195,20 +195,25 @@
         };
 
         $.get("/api/friends", (data) => {
-            console.log(data[0]);
+            if (data) {
+                console.log(data[0]);
 
-            for (var i = 0; i < data.length - 1; i++) {
-                for (var j = 0; j < 10; j++) {
-                    totalDifference += (Math.abs(userAnswerArray[j] - parseInt(data[i].scores[j])));
-                }
-                differencesArray.push(totalDifference);
-                console.log(differencesArray);
-                totalDifference = 0;
+                for (var i = 0; i < data.length; i++) {
+                    for (var j = 0; j < 10; j++) {
+                        totalDifference += (Math.abs(userAnswerArray[j] - parseInt(data[i].scores[j])));
+                    }
+                    differencesArray.push(totalDifference);
+                    console.log(differencesArray);
+                    totalDifference = 0;
+                };
+
+                console.log(data[indexOfSmallest(differencesArray)].name);
+
+                $(".modal-body").html("<h3>" + data[indexOfSmallest(differencesArray)].name + "</h3>");
+                $(".modal-body").prepend("<img class='img-fluid mb-3' src=" + data[indexOfSmallest(differencesArray)].photo + ">");
+                $('#myModal').modal('toggle');
             };
-
-            $(".modal-body").html("<h3>" + data[indexOfSmallest(differencesArray)].name + "</h3>");
-            $(".modal-body").prepend("<img class='img-fluid' href=" + data[indexOfSmallest(differencesArray)].photo + ">");
-            $('#myModal').modal('toggle');
+            
         });
 
         $.post("/api/tables", newSurveyAnswer, (data) => {
