@@ -122,8 +122,7 @@
                 <option value="5">Strongly Agree</option>
             </select>
         </div>
-        <button type="submit" class="btn btn-primary btn-lg btn-block mt-5 mb-5" data-toggle="modal"
-            data-target="#myModal" id="submit">Submit</button>
+        <button type="submit" class="btn btn-primary btn-lg btn-block mt-5 mb-5" id="submit">Submit</button>
         <hr>
         <p>Note: These questions are originally from a <a
                 href="https://www.16personalities.com/free-personality-test">Meyer's Briggs Personality</a> test.
@@ -196,9 +195,9 @@
         };
 
         $.get("/api/friends", (data) => {
-            console.log(data);
+            console.log(data[0]);
 
-            for (var i = 0; i < data.length; i++) {
+            for (var i = 0; i < data.length - 1; i++) {
                 for (var j = 0; j < 10; j++) {
                     totalDifference += (Math.abs(userAnswerArray[j] - parseInt(data[i].scores[j])));
                 }
@@ -207,7 +206,9 @@
                 totalDifference = 0;
             };
 
-            $(".modal-body").append("<h3>" + data[indexOfSmallest(differencesArray)].name + "</h3>");
+            $(".modal-body").html("<h3>" + data[indexOfSmallest(differencesArray)].name + "</h3>");
+            $(".modal-body").prepend("<img class='img-fluid' href=" + data[indexOfSmallest(differencesArray)].photo + ">");
+            $('#myModal').modal('toggle');
         });
 
         $.post("/api/tables", newSurveyAnswer, (data) => {
@@ -225,6 +226,7 @@
             $("#question8").val(1);
             $("#question9").val(1);
             $("#question10").val(1);
+            
         });
     });
 </script>
